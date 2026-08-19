@@ -6,8 +6,8 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-面向 DeepSeek Harness Web 的社区插件，用于配置模型的推理力度。它提供
-设置卡片，可为一个或多个模型配置推理等级，同时保留 DSH 对话编辑器原生的
+面向 DeepSeek Harness Web 的社区插件，用于配置模型能力。它提供设置卡片，
+可为一个或多个模型配置输入类型和推理等级，同时保留 DSH 对话编辑器原生的
 模型选择入口。模型弹窗采用左右并排布局，浏览选项时仍能看到 Model 和
 Reasoning 两行。
 
@@ -15,7 +15,9 @@ Reasoning 两行。
 
 ## 功能
 
-- **按模型配置**：为每个 provider 暴露的模型独立配置推理等级。
+- **按模型配置**：为每个 provider 暴露的模型独立配置输入类型和推理等级。
+- **图片输入支持**：为支持图片附件的模型设置模型级 `input` 字段（`text` 和
+  `image`）。
 - **批量编辑**：一次选择多个模型，批量应用 `Off`、`Minimal`、`Low`、
   `Medium`、`High`、`Extra high`、`Max` 等标准等级。
 - **自定义 wire value**：使用 `id` 表示标识符和 wire value 相同，使用
@@ -23,8 +25,9 @@ Reasoning 两行。
 - **原生编辑器集成**：使用 DSH 的模型目录和选择 API，不额外添加第二个模型控件。
 - **侧开模型菜单**：模型和推理等级列表并排展开，不丢失当前选择上下文。
 - **按 provider 持久化**：写入
-  `llm-pi-ai.providers.<provider>.models[].reasoningEfforts`，供 DSH 和 provider
-  集成校验并发送配置值。
+  `llm-pi-ai.providers.<provider>.models[].reasoningEfforts` 和
+  `llm-pi-ai.providers.<provider>.models[].input`，供 DSH 和 provider 集成校验并
+  发送配置值。
 - **不伪造默认值**：没有配置等级的模型不会显示虚假的推理菜单。
 
 ## 安装
@@ -64,14 +67,17 @@ dsh plugin --profile web remove dsh-plugin-reasoning-effort
 设置 -> 插件 -> 插件配置 -> Reasoning Effort
 ```
 
-展开卡片，选择一个或多个模型，然后配置要暴露的等级：
+展开卡片，选择一个或多个模型，然后配置模型能力：
 
-- **标准等级**：切换所选模型支持的标准等级。
+- **输入能力**：为所选模型切换 `文本` 和 `图片`。只有 `input` 包含 `image` 的模型
+  才会接收图片附件。
+- **标准等级**：切换所选模型支持的推理等级。
 - **自定义等级**：输入逗号分隔的值，例如 `balanced, thorough=high_reasoning`。
-- **应用**：将草稿等级保存到全部已选模型。
+- **应用**：将输入能力和推理等级草稿保存到全部已选模型。
 
-卡片读取现有的 `llm-pi-ai` provider 设置。模型的 `reasoningEfforts` 对象为空或
-缺失时，不会创建兜底菜单。
+卡片读取现有的 `llm-pi-ai` provider 设置，并写入模型级 `input` 与
+`reasoningEfforts`。未设置 `input` 时，会继续使用 provider 或已安装模型目录的能力，
+直到你显式配置它。
 
 ## 本地 patch 加载
 
@@ -101,7 +107,8 @@ Client 依赖 `package.json` 中声明的 DSH Web runtime 和 peer packages。�
 ## 范围与隐私
 
 插件不添加遥测客户端、凭据流程或后台网络服务。它读取当前 DSH 模型目录和
-`llm-pi-ai` 设置，并只通过 DSH settings store 持久化配置的 `reasoningEfforts` 值。
+`llm-pi-ai` 设置，并只通过 DSH settings store 持久化配置的 `input` 与
+`reasoningEfforts` 值。
 
 ## 许可证
 

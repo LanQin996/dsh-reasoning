@@ -12,11 +12,13 @@ interface DshWindow extends Window {
 type DshRequire = (id: string) => any
 type UnknownRecord = Record<string, any>
 type ReasoningEfforts = Record<string, string>
+type InputModality = 'text' | 'image'
 
 interface ModelConfig extends UnknownRecord {
   id: string
   name?: string
-  reasoningEfforts?: ReasoningEfforts
+  reasoningEfforts?: ReasoningEfforts | false
+  input?: InputModality[]
 }
 
 interface ProviderConfig extends UnknownRecord {
@@ -201,6 +203,7 @@ interface ReactRuntime {
 .dre-side-menuHasPane .dre-side-cellActive{background:transparent!important}
 .dre-side-menuPaneLeft .dre-side-subPane{left:auto;right:calc(100% + 8px)}
 .dre-side-menuPaneUp .dre-side-subPane{top:auto;bottom:0}
+.dre-capability{margin-top:12px;padding-top:12px;border-top:1px solid var(--dsw-alias-border-l2)}.dre-capabilityTitle{margin-bottom:7px;font-size:13px;font-weight:600;line-height:20px}.dre-capabilityOptions{display:flex;flex-wrap:wrap;gap:6px 12px}.dre-capabilityOption{display:inline-flex;align-items:center;gap:5px;color:var(--dsw-alias-label-primary);font-size:12px;line-height:20px;cursor:pointer}.dre-capabilityOption input{accent-color:var(--dsw-alias-brand-primary);margin:0}.dre-capabilityHint{margin-top:6px;color:var(--dsw-alias-label-tertiary);font-size:11px;line-height:16px}
 `
       document.head.append(style)
     }
@@ -236,23 +239,43 @@ interface ReactRuntime {
       return value && typeof value === 'object' && !Array.isArray(value) ? value : {}
     }
 
-    function applyModels(settingsStore: SettingsStore, selectedEntries: Array<{ providerId: string; model: ModelConfig; key: string }>, drafts: Record<string, ReasoningEfforts>): void {
+    function currentInput(model: ModelConfig | undefined): InputModality[] | undefined {
+      const value = model?.input
+      return Array.isArray(value) && value.every((modality) => modality === 'text' || modality === 'image')
+        ? value
+        : undefined
+    }
+
+    function effectiveInput(model: ModelConfig | undefined): InputModality[] {
+      return currentInput(model) ?? ['text']
+    }
+
+    function applyModels(settingsStore: SettingsStore, selectedEntries: Array<{ providerId: string; model: ModelConfig; key: string }>, drafts: Record<string, ReasoningEfforts>, inputDrafts: Record<string, InputModality[]>): void {
       const snapshot = settingsStore.getSnapshot()
       const providers = providersFrom(snapshot)
       const nextProviders = { ...providers }
-      const selectedByProvider = new Map()
+      const selectedByProvider = new Map<string, Map<string, { efforts?: ReasoningEfforts; input?: InputModality[] }>>()
       for (const entry of selectedEntries) {
         if (!selectedByProvider.has(entry.providerId)) selectedByProvider.set(entry.providerId, new Map())
-        selectedByProvider.get(entry.providerId).set(entry.model.id, drafts[entry.key] ?? currentEfforts(entry.model))
+        selectedByProvider.get(entry.providerId)?.set(entry.model.id, {
+          efforts: drafts[entry.key],
+          input: inputDrafts[entry.key]
+        })
       }
       for (const [providerId, models] of selectedByProvider) {
         const provider = providers[providerId]
         if (!provider || !Array.isArray(provider.models)) continue
         nextProviders[providerId] = {
           ...provider,
-          models: provider.models.map((model) => models.has(model.id)
-            ? { ...model, reasoningEfforts: models.get(model.id) }
-            : model)
+          models: provider.models.map((model) => {
+            const draft = models.get(model.id)
+            if (!draft) return model
+            return {
+              ...model,
+              ...(draft.efforts === undefined ? {} : { reasoningEfforts: draft.efforts }),
+              ...(draft.input === undefined ? {} : { input: draft.input })
+            }
+          })
         }
       }
       Promise.resolve(settingsStore.set('providers', nextProviders)).catch((error) => {
@@ -482,6 +505,7 @@ interface ReactRuntime {
       const [expanded, setExpanded] = React.useState(false)
       const [selectedKeys, setSelectedKeys] = React.useState([])
       const [drafts, setDrafts] = React.useState({})
+      const [inputDrafts, setInputDrafts] = React.useState({})
       const [customDraft, setCustomDraft] = React.useState('')
       const providers = providersFrom(snapshot)
       const entries = modelEntries(providers)
@@ -500,8 +524,27 @@ interface ReactRuntime {
       }
 
       const effortsFor = (entry) => drafts[entry.key] ?? currentEfforts(entry.model)
+      const inputFor = (entry) => inputDrafts[entry.key] ?? effectiveInput(entry.model)
       const allHave = (level) => selectedEntries.length > 0 && selectedEntries.every((entry) =>
         Object.prototype.hasOwnProperty.call(effortsFor(entry), level))
+      const allHaveInput = (modality: InputModality) => selectedEntries.length > 0 && selectedEntries.every((entry) =>
+        inputFor(entry).includes(modality))
+
+      const toggleInput = (modality: InputModality) => {
+        if (!writable || selectedEntries.length === 0) return
+        const enabled = allHaveInput(modality)
+        setInputDrafts((current) => {
+          const next = { ...current }
+          for (const entry of selectedEntries) {
+            const input = [...(next[entry.key] ?? effectiveInput(entry.model))]
+            const index = input.indexOf(modality)
+            if (enabled && index >= 0) input.splice(index, 1)
+            if (!enabled && index < 0) input.push(modality)
+            next[entry.key] = input
+          }
+          return next
+        })
+      }
 
       const toggleLevel = (level) => {
         if (!writable || selectedEntries.length === 0) return
@@ -578,8 +621,8 @@ interface ReactRuntime {
           onClick: () => setExpanded((value) => !value)
         },
           React.createElement('span', { className: 'dre-headText' },
-            React.createElement('span', { className: 'dre-title' }, '推理力度'),
-            React.createElement('span', { className: 'dre-subtitle' }, '选择模型并批量配置等级')
+            React.createElement('span', { className: 'dre-title' }, '模型能力'),
+            React.createElement('span', { className: 'dre-subtitle' }, '选择模型并配置输入能力和推理等级')
           ),
           React.createElement(NativeChevron, { direction: expanded ? 'up' : 'down', animated: true, className: 'dre-chevron' })
         ),
@@ -594,6 +637,20 @@ interface ReactRuntime {
               React.createElement('button', { type: 'button', className: 'dre-smallButton', disabled: !writable || selectedEntries.length === 0, onClick: clearSelection }, '清除')
             ),
             React.createElement('div', { className: 'dre-modelList' }, modelList),
+            React.createElement('div', { className: 'dre-capability' },
+              React.createElement('div', { className: 'dre-capabilityTitle' }, '输入能力'),
+              React.createElement('div', { className: 'dre-capabilityOptions' },
+                ([['text', '文本'], ['image', '图片']] as const).map(([id, label]) =>
+                  React.createElement('label', { className: 'dre-capabilityOption', key: id },
+                    React.createElement('input', {
+                      type: 'checkbox', checked: allHaveInput(id), disabled: !writable || selectedEntries.length === 0,
+                      onChange: () => toggleInput(id)
+                    }), label
+                  )
+                )
+              ),
+              React.createElement('div', { className: 'dre-capabilityHint' }, '图片附件只会发送给声明支持图片输入的模型。')
+            ),
             React.createElement('div', { className: 'dre-batch' },
               React.createElement('div', { className: 'dre-batchTitle' }, '为选中模型应用等级'),
               React.createElement('div', { className: 'dre-levels' }, STANDARD_LEVELS.map(([id, label]) =>
@@ -611,7 +668,7 @@ interface ReactRuntime {
               }),
               React.createElement('button', {
                 type: 'button', className: 'dre-apply', disabled: !writable || selectedEntries.length === 0,
-                onClick: () => applyModels(settingsStore, selectedEntries, drafts)
+                onClick: () => applyModels(settingsStore, selectedEntries, drafts, inputDrafts)
               }, '应用到选中模型')
             )
           )

@@ -6,8 +6,8 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-A community DeepSeek Harness Web plugin for configuring model reasoning effort.
-It adds a settings card for assigning reasoning levels to one or more models and
+A community DeepSeek Harness Web plugin for configuring model capabilities.
+It adds a settings card for assigning input modalities and reasoning levels to one or more models and
 keeps model selection in the DSH conversation composer. The model popup opens
 side-by-side, so the Model and Reasoning rows remain visible while their options
 are being browsed.
@@ -17,8 +17,10 @@ and does not imply DeepSeek endorsement.
 
 ## Highlights
 
-- **Per-model configuration** — Configure reasoning levels independently for
-  every model exposed by each provider.
+- **Per-model configuration** — Configure input modalities and reasoning levels
+  independently for every model exposed by each provider.
+- **Image input support** — Mark models that accept image attachments through the
+  model-level `input` field (`text` and `image`).
 - **Bulk editing** — Select several models at once, then apply standard levels
   (`Off`, `Minimal`, `Low`, `Medium`, `High`, `Extra high`, `Max`) in one step.
 - **Custom wire values** — Add provider-specific levels with `id` when the
@@ -28,8 +30,9 @@ and does not imply DeepSeek endorsement.
 - **Side-opening model menu** — Browse models and reasoning levels without
   losing the current selection context.
 - **Provider-aware persistence** — Changes are written to
-  `llm-pi-ai.providers.<provider>.models[].reasoningEfforts`, allowing DSH and
-  the provider integration to validate and send the configured value.
+  `llm-pi-ai.providers.<provider>.models[].reasoningEfforts` and
+  `llm-pi-ai.providers.<provider>.models[].input`, allowing DSH and the provider
+  integration to validate and send the configured values.
 - **No fabricated defaults** — Models without configured levels show no fake
   reasoning menu.
 
@@ -72,15 +75,18 @@ Open:
 Settings -> Plugins -> Plugin configuration -> Reasoning Effort
 ```
 
-Expand the card, select one or more models, and configure the levels to expose:
+Expand the card and select one or more models:
 
-- **Standard levels** — Toggle the levels supported by the selected models.
+- **Input capabilities** — Toggle `Text` and `Image` for the selected models. Image
+  attachments are only sent to models whose `input` includes `image`.
+- **Standard levels** — Toggle the reasoning levels supported by the selected models.
 - **Custom levels** — Enter comma-separated values such as
   `balanced, thorough=high_reasoning`.
-- **Apply** — Save the draft levels for all selected models.
+- **Apply** — Save both capability and reasoning drafts for all selected models.
 
-The card reads the existing `llm-pi-ai` provider settings. It does not create a
-fallback menu for a model whose `reasoningEfforts` object is empty or missing.
+The card reads the existing `llm-pi-ai` provider settings and writes model-level
+`input` and `reasoningEfforts` fields. An unset `input` keeps the provider or
+installed catalog behavior until you explicitly configure it.
 
 ## Local patch loading
 
