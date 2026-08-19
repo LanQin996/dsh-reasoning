@@ -47,6 +47,26 @@ window.__ModuleLoader__.load({
 .dre-side-menuHasPane .dre-side-rootPane,.dre-side-menuHasPane .dre-side-subPane{align-self:flex-start;border:1px solid var(--dsw-alias-border-inverted);border-radius:12px;background:var(--dsw-specific-menu);box-shadow:var(--dsw-shadow-lv3)}
 .dre-side-menuHasPane .dre-side-rootPane{height:max-content;overflow:visible;padding:4px}
 .dre-side-menuHasPane .dre-side-subPane{height:max-content;max-height:min(390px,100vh - 96px);overflow-y:auto;padding:4px}
+.dre-side-menuHasPane{width:min(736px,calc(100vw - 24px))}
+.dre-side-menu{width:max-content;max-width:calc(100vw - 24px);overflow:visible}
+.dre-side-menu:not(.dre-side-menuHasPane){width:max-content}
+.dre-side-menuHasPane{display:flex;align-items:flex-start;gap:8px;width:max-content;max-width:calc(100vw - 24px);left:auto;right:-56px}
+.dre-side-menuHasPane .dre-side-rootPane{width:max-content!important;min-width:0;max-width:calc(100vw - 24px);flex:0 0 auto}
+.dre-side-menuHasPane .dre-side-subPane{width:max-content!important;min-width:0;max-width:calc(100vw - 24px);flex:0 0 auto}
+.dre-side-menuHasPane .dre-side-cell{width:max-content;min-width:0;max-width:100%}
+.dre-side-menuHasPane .dre-side-optionList,.dre-side-menuHasPane .dre-side-subPane>div{width:max-content;min-width:0;max-width:100%}
+.dre-side-menuHasPane .dre-side-option{width:max-content;min-width:0;max-width:100%}
+.dre-side-menuHasPane .dre-side-optionCopy{flex:0 0 auto}
+.dre-side-menu{left:-170px;right:auto}
+.dre-side-menuHasPane{left:-170px;right:auto}
+.dre-side-menu:not(.dre-side-menuHasPane){left:auto;right:0}
+.dre-side-menuHasPane .dre-side-subPane{min-width:250px}
+.dre-side-menuHasPane .dre-side-optionList,.dre-side-menuHasPane .dre-side-subPane>div{width:100%;min-width:0}
+.dre-side-menuHasPane .dre-side-option{width:100%;min-width:0}
+.dre-side-menuHasPane .dre-side-optionCopy{flex:1;min-width:0}
+.dre-side-menuHasPane{left:auto;right:0;width:max-content!important;display:block;overflow:visible}
+.dre-side-menuHasPane .dre-side-rootPane{width:max-content!important;max-width:calc(100vw - 24px)}
+.dre-side-menuHasPane .dre-side-subPane{position:absolute;left:calc(100% + 8px);top:0;width:250px!important;min-width:250px;max-width:calc(100vw - 24px);height:max-content}
 .dre-nativeChevron{display:inline-flex;align-items:center;justify-content:center;flex:none;width:14px;height:14px;color:var(--dsw-alias-label-tertiary);transform:rotate(0);transform-origin:center}.dre-nativeChevronRight{transform:rotate(-90deg)}.dre-nativeChevronUp{transform:rotate(180deg)}.dre-nativeChevronAnimated{transition:transform .12s}.dre-nativeChevron svg,.dre-side-check svg{display:block;flex:none}
 .dre-side-chevron::before{display:none}.dre-side-check{display:inline-flex;align-items:center;justify-content:center;width:18px;height:16px;flex:none;color:var(--dsw-alias-label-primary);font-size:0;line-height:0}
 @media (prefers-reduced-motion:reduce){.dre-nativeChevronAnimated{transition:none}}
@@ -55,6 +75,10 @@ window.__ModuleLoader__.load({
 .dre-side-cellActive{background:var(--dsw-alias-interactive-bg-hover)}
 .dre-side-groupTitle,.dre-side-empty{display:block}
 @media (max-width:560px){.dre-side-menu{width:min(338px,calc(100vw - 24px));right:0}.dre-side-menuHasPane{right:0}.dre-side-menuHasPane .dre-side-rootPane{flex:1 1 auto;min-width:0;max-width:none;width:auto}.dre-side-menuHasPane .dre-side-subPane{display:none!important}}
+.dre-side-menuHasPane{right:0}
+.dre-side-menuHasPane .dre-side-cell{width:100%!important;min-width:0;max-width:none}
+.dre-side-menuHasPane .dre-side-cellActive{background:transparent!important}
+.dre-side-menuPaneLeft .dre-side-subPane{left:auto;right:calc(100% + 8px)}
 `
       document.head.append(style)
     }
@@ -167,6 +191,7 @@ window.__ModuleLoader__.load({
       )
       const [open, setOpen] = React.useState(false)
       const [pane, setPane] = React.useState(null)
+      const [paneSide, setPaneSide] = React.useState('right')
       const rootRef = React.useRef(null)
 
       React.useEffect(() => {
@@ -183,6 +208,31 @@ window.__ModuleLoader__.load({
         document.addEventListener('mousedown', closeOutside)
         return () => document.removeEventListener('mousedown', closeOutside)
       }, [open])
+
+      React.useLayoutEffect(() => {
+        if (!open || pane === null) {
+          setPaneSide('right')
+          return undefined
+        }
+        const updatePaneSide = () => {
+          const root = rootRef.current
+          const rootPane = root?.querySelector('.dre-side-rootPane')
+          const subPane = root?.querySelector('.dre-side-subPane')
+          if (!rootPane || !subPane) return
+          const rootRect = rootPane.getBoundingClientRect()
+          const subWidth = subPane.getBoundingClientRect().width || 250
+          const edge = 8
+          const gap = 8
+          const rightFits = rootRect.right + gap + subWidth <= window.innerWidth - edge
+          setPaneSide((currentSide) => {
+            const nextSide = rightFits ? 'right' : 'left'
+            return currentSide === nextSide ? currentSide : nextSide
+          })
+        }
+        updatePaneSide()
+        window.addEventListener('resize', updatePaneSide)
+        return () => window.removeEventListener('resize', updatePaneSide)
+      }, [open, pane])
 
       if (!available) return null
       const current = state.current
@@ -244,7 +294,7 @@ window.__ModuleLoader__.load({
         ))
       /* SIDE_MENU_START */
       const menu = open && React.createElement('div', {
-        className: `dre-side-menu${pane !== null ? ' dre-side-menuHasPane' : ''}`, role: 'menu', 'aria-label': '模型和推理等级'
+        className: `dre-side-menu${pane !== null ? ' dre-side-menuHasPane' : ''}${pane !== null && paneSide === 'left' ? ' dre-side-menuPaneLeft' : ''}`, role: 'menu', 'aria-label': '模型和推理等级'
       },
         React.createElement('div', { className: 'dre-side-rootPane' },
           React.createElement('button', { type: 'button', className: `dre-side-cell${pane === 'model' ? ' dre-side-cellActive' : ''}`, onClick: () => setPane('model') },
