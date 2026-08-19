@@ -79,6 +79,7 @@ window.__ModuleLoader__.load({
 .dre-side-menuHasPane .dre-side-cell{width:100%!important;min-width:0;max-width:none}
 .dre-side-menuHasPane .dre-side-cellActive{background:transparent!important}
 .dre-side-menuPaneLeft .dre-side-subPane{left:auto;right:calc(100% + 8px)}
+.dre-side-menuPaneUp .dre-side-subPane{top:auto;bottom:0}
 `
       document.head.append(style)
     }
@@ -192,6 +193,8 @@ window.__ModuleLoader__.load({
       const [open, setOpen] = React.useState(false)
       const [pane, setPane] = React.useState(null)
       const [paneSide, setPaneSide] = React.useState('right')
+      const [paneVertical, setPaneVertical] = React.useState('down')
+      const [paneMaxHeight, setPaneMaxHeight] = React.useState(null)
       const rootRef = React.useRef(null)
 
       React.useEffect(() => {
@@ -212,9 +215,11 @@ window.__ModuleLoader__.load({
       React.useLayoutEffect(() => {
         if (!open || pane === null) {
           setPaneSide('right')
+          setPaneVertical('down')
+          setPaneMaxHeight(null)
           return undefined
         }
-        const updatePaneSide = () => {
+        const updatePanePlacement = () => {
           const root = rootRef.current
           const rootPane = root?.querySelector('.dre-side-rootPane')
           const subPane = root?.querySelector('.dre-side-subPane')
@@ -224,14 +229,28 @@ window.__ModuleLoader__.load({
           const edge = 8
           const gap = 8
           const rightFits = rootRect.right + gap + subWidth <= window.innerWidth - edge
-          setPaneSide((currentSide) => {
-            const nextSide = rightFits ? 'right' : 'left'
-            return currentSide === nextSide ? currentSide : nextSide
-          })
+          const contentHeight = Math.min(subPane.scrollHeight, 390)
+          const downSpace = Math.max(0, window.innerHeight - edge - rootRect.top)
+          const upSpace = Math.max(0, rootRect.bottom - edge)
+          const vertical = contentHeight <= downSpace || downSpace >= upSpace ? 'down' : 'up'
+          const availableHeight = vertical === 'down' ? downSpace : upSpace
+          setPaneSide(rightFits ? 'right' : 'left')
+          setPaneVertical(vertical)
+          setPaneMaxHeight(Math.max(1, Math.floor(Math.min(contentHeight, availableHeight))))
         }
-        updatePaneSide()
-        window.addEventListener('resize', updatePaneSide)
-        return () => window.removeEventListener('resize', updatePaneSide)
+        updatePanePlacement()
+        window.addEventListener('resize', updatePanePlacement)
+        const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(updatePanePlacement) : null
+        if (observer) {
+          const observedRoot = rootRef.current
+          const observedSubPane = observedRoot?.querySelector('.dre-side-subPane')
+          if (observedRoot) observer.observe(observedRoot)
+          if (observedSubPane) observer.observe(observedSubPane)
+        }
+        return () => {
+          window.removeEventListener('resize', updatePanePlacement)
+          observer?.disconnect()
+        }
       }, [open, pane])
 
       if (!available) return null
@@ -294,7 +313,7 @@ window.__ModuleLoader__.load({
         ))
       /* SIDE_MENU_START */
       const menu = open && React.createElement('div', {
-        className: `dre-side-menu${pane !== null ? ' dre-side-menuHasPane' : ''}${pane !== null && paneSide === 'left' ? ' dre-side-menuPaneLeft' : ''}`, role: 'menu', 'aria-label': '模型和推理等级'
+        className: `dre-side-menu${pane !== null ? ' dre-side-menuHasPane' : ''}${pane !== null && paneSide === 'left' ? ' dre-side-menuPaneLeft' : ''}${pane !== null && paneVertical === 'up' ? ' dre-side-menuPaneUp' : ''}`, role: 'menu', 'aria-label': '模型和推理等级'
       },
         React.createElement('div', { className: 'dre-side-rootPane' },
           React.createElement('button', { type: 'button', className: `dre-side-cell${pane === 'model' ? ' dre-side-cellActive' : ''}`, onClick: () => setPane('model') },
@@ -312,7 +331,7 @@ window.__ModuleLoader__.load({
             )
           ),
         ),
-        pane !== null && React.createElement('div', { className: 'dre-side-subPane' },
+        pane !== null && React.createElement('div', { className: 'dre-side-subPane', style: paneMaxHeight === null ? undefined : { maxHeight: `${paneMaxHeight}px` } },
           pane === 'model' && modelOptions,
           pane === 'effort' && React.createElement('div', { className: 'dre-side-optionList' }, effortOptions)
         )
