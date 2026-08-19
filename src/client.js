@@ -31,13 +31,13 @@ window.__ModuleLoader__.load({
     }
 
     const STANDARD_LEVELS = [
-      ['off', 'Off'],
-      ['minimal', 'Minimal'],
-      ['low', 'Low'],
-      ['medium', 'Medium'],
-      ['high', 'High'],
-      ['xhigh', 'Extra high'],
-      ['max', 'Max']
+      ['off', '关闭'],
+      ['minimal', '最低'],
+      ['low', '低'],
+      ['medium', '中'],
+      ['high', '高'],
+      ['xhigh', '超高'],
+      ['max', '最大']
     ]
 
     function providersFrom(snapshot) {
@@ -86,12 +86,12 @@ window.__ModuleLoader__.load({
     }
 
     const EFFORT_LABELS = {
-      off: 'Off', minimal: 'Minimal', low: 'Low', medium: 'Medium',
-      high: 'High', xhigh: 'Extra high', max: 'Max'
+      off: '关闭', minimal: '最低', low: '低', medium: '中',
+      high: '高', xhigh: '超高', max: '最大'
     }
 
     function effortName(effort) {
-      return EFFORT_LABELS[effort?.id] ?? effort?.name ?? effort?.id ?? 'Default'
+      return EFFORT_LABELS[effort?.id] ?? effort?.name ?? effort?.id ?? '默认'
     }
 
     function hideNativeModelSelector() {
@@ -136,10 +136,10 @@ window.__ModuleLoader__.load({
       const model = group?.models.find((entry) => entry.id === current?.model)
       const reasoning = model?.reasoning
       const effort = current?.reasoningEffort ?? reasoning?.defaultEffort
-      const modelLabel = model?.name ?? current?.model ?? 'Select model'
+      const modelLabel = model?.name ?? current?.model ?? '选择模型'
       const effortLabel = reasoning === undefined
-        ? 'Default'
-        : effort === undefined ? 'Default' : effortName({ id: effort })
+        ? '默认'
+        : effort === undefined ? '默认' : effortName({ id: effort })
       const choose = (selection) => select(selection).then((accepted) => {
         if (!accepted) return
         setOpen(false)
@@ -147,23 +147,23 @@ window.__ModuleLoader__.load({
       })
       /* SIDE_MENU_START */
       const menu = open && React.createElement('div', {
-        className: 'dre-side-menu', role: 'menu', 'aria-label': 'Model and reasoning levels'
+        className: 'dre-side-menu', role: 'menu', 'aria-label': '模型和推理等级'
       },
         React.createElement('div', { className: 'dre-side-rootPane' },
           React.createElement('button', { type: 'button', className: 'dre-side-cell', onClick: () => setPane('model') },
-            React.createElement('span', { className: 'dre-side-cellLabel' }, 'Model'),
+            React.createElement('span', { className: 'dre-side-cellLabel' }, '模型'),
             React.createElement('span', { className: 'dre-side-cellValue' }, modelLabel),
             React.createElement('span', { className: 'dre-side-chevron', 'aria-hidden': true }, '>')
           ),
           reasoning !== undefined && React.createElement('button', { type: 'button', className: 'dre-side-cell', onClick: () => setPane('effort') },
-            React.createElement('span', { className: 'dre-side-cellLabel' }, 'Reasoning'),
+            React.createElement('span', { className: 'dre-side-cellLabel' }, '推理力度'),
             React.createElement('span', { className: 'dre-side-cellValue' }, effortLabel),
             React.createElement('span', { className: 'dre-side-chevron', 'aria-hidden': true }, '>')
           )
         ),
         pane !== null && React.createElement('div', { className: 'dre-side-subPane' },
           pane === 'model' && (state.status === 'loading'
-            ? React.createElement('div', { className: 'dre-side-empty' }, 'Loading models...')
+            ? React.createElement('div', { className: 'dre-side-empty' }, '正在加载模型...')
             : state.groups.map((entry) => React.createElement('div', { key: entry.id },
               React.createElement('div', { className: 'dre-side-groupTitle' }, entry.name ?? entry.id),
               entry.models.map((candidate) => React.createElement('button', {
@@ -181,7 +181,7 @@ window.__ModuleLoader__.load({
           pane === 'effort' && (reasoning?.efforts?.length
             ? React.createElement(React.Fragment, null,
               reasoning.defaultEffort === undefined ? React.createElement('button', { type: 'button', className: 'dre-side-option', onClick: () => choose({ provider: current.provider, model: current.model }) },
-                React.createElement('span', { className: 'dre-side-optionName' }, 'Default'),
+                React.createElement('span', { className: 'dre-side-optionName' }, '默认'),
                 React.createElement('span', { className: 'dre-side-check' }, effort === undefined ? '✓' : '')
               ) : null,
               reasoning.efforts.map((candidate) => React.createElement('button', {
@@ -195,7 +195,7 @@ window.__ModuleLoader__.load({
                 ),
                 React.createElement('span', { className: 'dre-side-check' }, effort === candidate.id ? '✓' : '')
               )))
-            : React.createElement('div', { className: 'dre-side-empty' }, 'No reasoning levels configured')
+            : React.createElement('div', { className: 'dre-side-empty' }, '未配置推理等级')
           )
         )
       /* SIDE_MENU_END */
@@ -203,7 +203,7 @@ window.__ModuleLoader__.load({
       return React.createElement('div', { className: 'dre-side-root', ref: rootRef },
         React.createElement('button', {
           type: 'button', className: 'dre-side-trigger', disabled: locked || state.status === 'selecting',
-          'aria-label': `Select model, current ${modelLabel}, reasoning ${effortLabel}`,
+          'aria-label': `选择模型，当前为${modelLabel}，推理力度为${effortLabel}`,
           'aria-expanded': open, onClick: () => { setOpen((value) => !value); setPane(null); load() }
         },
           React.createElement('span', { className: 'dre-side-model' }, modelLabel),
@@ -319,24 +319,24 @@ window.__ModuleLoader__.load({
           onClick: () => setExpanded((value) => !value)
         },
           React.createElement('span', { className: 'dre-headText' },
-            React.createElement('span', { className: 'dre-title' }, 'Reasoning Effort'),
-            React.createElement('span', { className: 'dre-subtitle' }, 'Select models and configure levels in bulk')
+            React.createElement('span', { className: 'dre-title' }, '推理力度'),
+            React.createElement('span', { className: 'dre-subtitle' }, '选择模型并批量配置等级')
           ),
           React.createElement('span', { className: 'dre-chevron', 'aria-hidden': true }, 'v')
         ),
         expanded && React.createElement('div', { className: 'dre-content' },
-          snapshot.status === 'loading' && React.createElement('div', { className: 'dre-empty' }, 'Loading model settings...'),
+          snapshot.status === 'loading' && React.createElement('div', { className: 'dre-empty' }, '正在加载模型设置...'),
           snapshot.error && React.createElement('div', { className: 'dre-error' }, String(snapshot.error)),
-          snapshot.status !== 'loading' && entries.length === 0 && React.createElement('div', { className: 'dre-empty' }, 'No models found. Add models in llm-pi-ai settings first.'),
+          snapshot.status !== 'loading' && entries.length === 0 && React.createElement('div', { className: 'dre-empty' }, '未找到模型，请先在 llm-pi-ai 设置中添加模型。'),
           entries.length > 0 && React.createElement(React.Fragment, null,
             React.createElement('div', { className: 'dre-selectionBar' },
-              React.createElement('span', { className: 'dre-selectionCount' }, `${selectedEntries.length} model${selectedEntries.length === 1 ? '' : 's'} selected`),
-              React.createElement('button', { type: 'button', className: 'dre-smallButton', disabled: !writable, onClick: selectAll }, 'Select all'),
-              React.createElement('button', { type: 'button', className: 'dre-smallButton', disabled: !writable || selectedEntries.length === 0, onClick: clearSelection }, 'Clear')
+              React.createElement('span', { className: 'dre-selectionCount' }, `已选择 ${selectedEntries.length} 个模型`),
+              React.createElement('button', { type: 'button', className: 'dre-smallButton', disabled: !writable, onClick: selectAll }, '全选'),
+              React.createElement('button', { type: 'button', className: 'dre-smallButton', disabled: !writable || selectedEntries.length === 0, onClick: clearSelection }, '清除')
             ),
             React.createElement('div', { className: 'dre-modelList' }, modelList),
             React.createElement('div', { className: 'dre-batch' },
-              React.createElement('div', { className: 'dre-batchTitle' }, 'Apply levels to selected models'),
+              React.createElement('div', { className: 'dre-batchTitle' }, '为选中模型应用等级'),
               React.createElement('div', { className: 'dre-levels' }, STANDARD_LEVELS.map(([id, label]) =>
                 React.createElement('label', { className: 'dre-level', key: id },
                   React.createElement('input', {
@@ -347,13 +347,13 @@ window.__ModuleLoader__.load({
               )),
               React.createElement('input', {
                 className: 'dre-custom', type: 'text', disabled: !writable || selectedEntries.length === 0,
-                placeholder: 'Custom levels: id or id=wireValue', value: customValue(),
+                placeholder: '自定义等级：id 或 id=wireValue', value: customValue(),
                 onChange: (event) => setCustomDraft(event.target.value), onBlur: (event) => saveCustom(event.target.value)
               }),
               React.createElement('button', {
                 type: 'button', className: 'dre-apply', disabled: !writable || selectedEntries.length === 0,
                 onClick: () => applyModels(settingsStore, selectedEntries, drafts)
-              }, 'Apply to selected models')
+              }, '应用到选中模型')
             )
           )
         )
