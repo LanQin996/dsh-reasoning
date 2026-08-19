@@ -2,6 +2,7 @@
 
 [![DSH Plugin](https://img.shields.io/badge/DeepSeek%20Harness-plugin-4f7cff)](https://github.com/topics/dsh-plugin)
 [![GitHub repository](https://img.shields.io/badge/source-GitHub-181717?logo=github)](https://github.com/LanQin996/dsh-reasoning)
+[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
@@ -103,4 +104,6 @@ Client 依赖 `package.json` 中声明的 DSH Web runtime 和 peer packages。�
 
 ## 许可证
 
-本仓库尚未声明许可证。在添加许可证之前，源码可供查看，但不代表自动授予再分发或修改权限。
+Copyright (C) 2026 LanQin。
+
+本项目使用 [GNU General Public License v3.0](LICENSE)（`GPL-3.0-only`）授权。
