@@ -30,6 +30,8 @@ window.__ModuleLoader__.load({
 .dre-side-menu{box-sizing:border-box;flex-wrap:nowrap;align-items:stretch}
 .dre-side-rootPane,.dre-side-subPane{box-sizing:border-box;display:block!important;flex:0 0 240px;min-width:240px;max-width:240px}
 .dre-side-cell,.dre-side-option{box-sizing:border-box;display:flex!important;flex:0 0 auto;flex-direction:row}
+.dre-side-cellActive{background:var(--dsw-alias-interactive-bg-hover)}
+.dre-side-advanced{margin-top:4px;border-top:1px solid var(--dsw-alias-border-l2);border-radius:0;color:var(--dsw-alias-label-secondary)}
 .dre-side-groupTitle,.dre-side-empty{display:block}
 `
       document.head.append(style)
@@ -142,6 +144,7 @@ window.__ModuleLoader__.load({
       const reasoning = model?.reasoning
       const effort = current?.reasoningEffort ?? reasoning?.defaultEffort
       const modelLabel = model?.name ?? current?.model ?? '选择模型'
+      const showProviderHeaders = state.groups.length > 1
       const effortLabel = reasoning === undefined
         ? '默认'
         : effort === undefined ? '默认' : effortName({ id: effort })
@@ -155,22 +158,26 @@ window.__ModuleLoader__.load({
         className: 'dre-side-menu', role: 'menu', 'aria-label': '模型和推理等级'
       },
         React.createElement('div', { className: 'dre-side-rootPane' },
-          React.createElement('button', { type: 'button', className: 'dre-side-cell', onClick: () => setPane('model') },
+          React.createElement('button', { type: 'button', className: `dre-side-cell${pane === 'model' ? ' dre-side-cellActive' : ''}`, onClick: () => setPane('model') },
             React.createElement('span', { className: 'dre-side-cellLabel' }, '模型'),
             React.createElement('span', { className: 'dre-side-cellValue' }, modelLabel),
             React.createElement('span', { className: 'dre-side-chevron', 'aria-hidden': true }, '>')
           ),
-          reasoning !== undefined && React.createElement('button', { type: 'button', className: 'dre-side-cell', onClick: () => setPane('effort') },
+          reasoning !== undefined && React.createElement('button', { type: 'button', className: `dre-side-cell${pane === 'effort' ? ' dre-side-cellActive' : ''}`, onClick: () => setPane('effort') },
             React.createElement('span', { className: 'dre-side-cellLabel' }, '推理力度'),
             React.createElement('span', { className: 'dre-side-cellValue' }, effortLabel),
             React.createElement('span', { className: 'dre-side-chevron', 'aria-hidden': true }, '>')
+          ),
+          React.createElement('button', { type: 'button', className: `dre-side-cell dre-side-advanced${pane === 'advanced' ? ' dre-side-cellActive' : ''}`, 'aria-expanded': pane === 'advanced', onClick: () => setPane('advanced') },
+            React.createElement('span', { className: 'dre-side-cellLabel' }, '高级'),
+            React.createElement('span', { className: 'dre-side-chevron', 'aria-hidden': true }, pane === 'advanced' ? '^' : 'v')
           )
         ),
         pane !== null && React.createElement('div', { className: 'dre-side-subPane' },
           pane === 'model' && (state.status === 'loading'
             ? React.createElement('div', { className: 'dre-side-empty' }, '正在加载模型...')
             : state.groups.map((entry) => React.createElement('div', { key: entry.id },
-              React.createElement('div', { className: 'dre-side-groupTitle' }, entry.name ?? entry.id),
+              showProviderHeaders && React.createElement('div', { className: 'dre-side-groupTitle' }, entry.name ?? entry.id),
               entry.models.map((candidate) => React.createElement('button', {
                 type: 'button', role: 'menuitemradio', 'aria-checked': current?.provider === entry.id && current?.model === candidate.id,
                 className: 'dre-side-option', key: candidate.id,
@@ -201,7 +208,8 @@ window.__ModuleLoader__.load({
                 React.createElement('span', { className: 'dre-side-check' }, effort === candidate.id ? '✓' : '')
               )))
             : React.createElement('div', { className: 'dre-side-empty' }, '未配置推理等级')
-          )
+          ),
+          pane === 'advanced' && React.createElement('div', { className: 'dre-side-empty' }, '暂无额外设置')
         )
       /* SIDE_MENU_END */
 
