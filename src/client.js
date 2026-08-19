@@ -387,6 +387,7 @@ window.__ModuleLoader__.load({
         }, SideModelSelect))
         ctx.slots.inject('settings.plugin.item', () => ctx.slots.register({
           name: 'settings.plugin.item',
+          key: 'reasoning-effort-settings',
           id: 'reasoning-effort-settings',
           order: 25,
           inject: () => ({ settingsStore })

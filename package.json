@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-reasoning-effort",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Configure model reasoning efforts for DeepSeek Harness",
   "license": "GPL-3.0-only",
   "type": "module",
