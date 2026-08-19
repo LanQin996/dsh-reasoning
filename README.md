@@ -38,11 +38,14 @@ and does not imply DeepSeek endorsement.
 
 ## Install
 
-Install the GitHub source package into the DSH Web profile:
+Install the precompiled package from npm into the DSH Web profile:
 
 ```bash
-dsh plugin --profile web add github:LanQin996/dsh-reasoning#main
+dsh plugin --profile web add dsh-plugin-reasoning-effort
 ```
+
+The npm package already contains the JavaScript runtime generated from the TypeScript
+source, so pnpm does not need to run dependency build scripts during installation.
 
 Restart the DSH Web profile after installation so the Host and Client plugin
 graph is rebuilt.
@@ -51,7 +54,10 @@ To install a local checkout while developing:
 
 ```bash
 git clone https://github.com/LanQin996/dsh-reasoning.git
-dsh plugin --profile web add file:./dsh-reasoning
+cd dsh-reasoning
+npm install
+npm run build
+dsh plugin --profile web add file:.
 ```
 
 To remove the plugin:
@@ -111,6 +117,10 @@ npm run typecheck
 npm run build
 ```
 
+`npm pack` and `npm publish` run the `prepack` hook, which type-checks and compiles
+the TypeScript source into `dist/`. Installing the published package does not execute
+that build hook and is compatible with pnpm v10 without an `allowBuilds` entry.
+
 The client expects the DSH Web runtime and peer packages declared in
 `package.json`. When testing locally, load it through the patch command above
 inside a DSH installation that provides those packages.
@@ -119,8 +129,8 @@ inside a DSH installation that provides those packages.
 
 The plugin does not add a telemetry client, credential flow, or background
 network service. It reads the active DSH model directory and `llm-pi-ai` settings,
-then persists only the configured `reasoningEfforts` values through the DSH
-settings store.
+then persists only the configured `input` and `reasoningEfforts` values through the
+DSH settings store.
 
 ## License
 

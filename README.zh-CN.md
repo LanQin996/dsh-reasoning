@@ -32,11 +32,14 @@ Reasoning 两行。
 
 ## 安装
 
-将 GitHub 源码包安装到 DSH Web profile：
+从 npm 安装已预编译的包到 DSH Web profile：
 
 ```bash
-dsh plugin --profile web add github:LanQin996/dsh-reasoning#main
+dsh plugin --profile web add dsh-plugin-reasoning-effort
 ```
+
+npm 包已经包含由 TypeScript 源码生成的 JavaScript 运行文件，因此 pnpm 安装时
+不需要执行依赖构建脚本。
 
 安装后重启 DSH Web profile，使 Host 和 Client 插件图重新构建。
 
@@ -44,7 +47,10 @@ dsh plugin --profile web add github:LanQin996/dsh-reasoning#main
 
 ```bash
 git clone https://github.com/LanQin996/dsh-reasoning.git
-dsh plugin --profile web add file:./dsh-reasoning
+cd dsh-reasoning
+npm install
+npm run build
+dsh plugin --profile web add file:.
 ```
 
 卸载命令：
@@ -100,6 +106,10 @@ npm install
 npm run typecheck
 npm run build
 ```
+
+执行 `npm pack` 或 `npm publish` 时，`prepack` 会先进行类型检查并把 TypeScript
+源码编译到 `dist/`。安装已发布的 npm 包不会执行这个构建钩子，因此兼容 pnpm v10，
+也不需要配置 `allowBuilds`。
 
 Client 依赖 `package.json` 中声明的 DSH Web runtime 和 peer packages。进行本地测试时，
 请在提供这些依赖的 DSH 安装中使用上面的 patch 命令加载。
