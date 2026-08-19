@@ -95,13 +95,14 @@ The patch inserts the plugin with the id `dsh-reasoning-effort`.
 
 ## Development
 
-The repository contains the Host entrypoint and the browser-side client in
-`src/index.js` and `src/client.js`. The package currently has no build or test
-script; changes can be checked with Node's syntax validator:
+The repository contains the TypeScript Host entrypoint and browser-side client in
+`src/index.ts` and `src/client.ts`. TypeScript is compiled into the runtime files in
+`dist/` before the plugin is loaded:
 
 ```bash
-node --check src/index.js
-node --check src/client.js
+npm install
+npm run typecheck
+npm run build
 ```
 
 The client expects the DSH Web runtime and peer packages declared in

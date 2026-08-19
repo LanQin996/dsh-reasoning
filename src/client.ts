@@ -1,8 +1,129 @@
-window.__ModuleLoader__.load({
+interface DshModuleDefinition {
+  id: string
+  factory: (require: DshRequire) => unknown
+}
+
+interface DshWindow extends Window {
+  __ModuleLoader__: {
+    load(definition: DshModuleDefinition): void
+  }
+}
+
+type DshRequire = (id: string) => any
+type UnknownRecord = Record<string, any>
+type ReasoningEfforts = Record<string, string>
+
+interface ModelConfig extends UnknownRecord {
+  id: string
+  name?: string
+  reasoningEfforts?: ReasoningEfforts
+}
+
+interface ProviderConfig extends UnknownRecord {
+  displayName?: string
+  models?: ModelConfig[]
+}
+
+interface SettingsSnapshot {
+  status?: string
+  writable?: boolean
+  error?: unknown
+  value?: { providers?: Record<string, ProviderConfig> }
+}
+
+interface SettingsStore {
+  getSnapshot(): SettingsSnapshot
+  subscribe(listener: () => void): () => void
+  load(): Promise<unknown>
+  set(key: string, value: unknown): unknown
+}
+
+interface ModelSelection {
+  provider: string
+  model: string
+  reasoningEffort?: string
+}
+
+interface ReasoningOption {
+  id: string
+  name?: string
+  description?: string
+}
+
+interface ModelReasoning {
+  efforts: ReasoningOption[]
+  defaultEffort?: string
+}
+
+interface DirectoryModel {
+  id: string
+  name?: string
+  reasoning?: ModelReasoning
+}
+
+interface DirectoryGroup {
+  id: string
+  name?: string
+  models: DirectoryModel[]
+}
+
+interface ModelDirectorySnapshot {
+  status: string
+  current?: ModelSelection
+  groups: DirectoryGroup[]
+}
+
+interface ModelDirectory {
+  subscribe(listener: () => void): () => void
+  getSnapshot(): ModelDirectorySnapshot
+  load(): Promise<unknown>
+  select(selection: ModelSelection): Promise<unknown>
+  store: UnknownRecord
+}
+
+interface SideModelSelectProps {
+  available: boolean
+  directory: ModelDirectory
+  load(): Promise<unknown>
+  select(selection: ModelSelection): Promise<boolean>
+  locked: boolean
+}
+
+interface ReasoningSettingsCardProps {
+  settingsStore: SettingsStore
+}
+
+interface PluginContext {
+  effect(cleanup: () => void): void
+  settingsScope: { bind(options: { namespace: string }): SettingsStore }
+  modelDirectories: { directoryFor(sessionId: string): ModelDirectory }
+  sessions: { subagentAddress(sessionId: string): unknown }
+  slots: {
+    inject(name: string, factory: () => unknown): void
+    register(options: UnknownRecord, component: unknown): unknown
+  }
+}
+
+interface PluginExports {
+  inject: string[]
+  apply(ctx: PluginContext): void
+}
+
+interface ReactRuntime {
+  createElement(...args: any[]): any
+  Fragment: any
+  useSyncExternalStore<T>(subscribe: (listener: () => void) => () => void, getSnapshot: () => T, getServerSnapshot: () => T): T
+  useState(initialValue: any): [any, (value: any) => void]
+  useRef<T>(initialValue: T): { current: T }
+  useEffect(effect: () => void | (() => void | undefined), dependencies?: readonly unknown[]): void
+  useLayoutEffect(effect: () => void | (() => void | undefined), dependencies?: readonly unknown[]): void
+}
+
+(window as unknown as DshWindow).__ModuleLoader__.load({
   id: 'dsh-plugin-reasoning-effort',
   factory: (require) => {
-    const module = { exports: {} }
-    const React = require('react')
+    const module: { exports: PluginExports } = { exports: {} as PluginExports }
+    const React: ReactRuntime = require('react')
 
     const STYLE_ID = 'dsh-plugin-reasoning-effort-settings-style'
     if (document.getElementById(STYLE_ID) === null) {
@@ -25,7 +146,7 @@ window.__ModuleLoader__.load({
 .dre-apply{margin-top:10px;width:100%;color:var(--dsw-alias-label-primary)}
 .dre-empty,.dre-error{padding:12px 0;color:var(--dsw-alias-label-secondary);font-size:12px;line-height:18px}.dre-error{color:var(--dsw-alias-state-error-primary)}
 .dre-native-model-hidden{display:none!important}
-.dre-side-root{position:relative;min-width:0}.dre-side-trigger{box-sizing:border-box;display:flex;align-items:center;gap:4px;width:164px;min-width:164px;max-width:164px;height:28px;border:0;border-radius:24px;background:transparent;color:var(--dsw-alias-label-secondary);padding:0 4px 0 8px;font:inherit;font-size:13px;font-weight:500;cursor:pointer}.dre-side-trigger:hover{background:var(--dsw-alias-interactive-bg-hover)}.dre-side-trigger:disabled{color:var(--dsw-alias-label-dimmed);cursor:default}.dre-side-model{min-width:0;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dre-side-effort{flex:none;color:var(--dsw-alias-label-caption);white-space:nowrap}.dre-side-menu{position:absolute;right:0;bottom:calc(100% + 8px);z-index:30;display:flex;width:min(360px,calc(100vw - 24px));max-width:calc(100vw - 24px);max-height:min(390px,100vh - 96px);overflow:hidden;border:1px solid var(--dsw-alias-border-inverted);border-radius:12px;background:var(--dsw-specific-menu);box-shadow:var(--dsw-shadow-lv3);color:var(--dsw-alias-label-primary);padding:4px}.dre-side-menuHasPane{width:min(736px,calc(100vw - 24px))}.dre-side-rootPane,.dre-side-subPane{box-sizing:border-box;min-width:0;overflow-y:auto}.dre-side-rootPane{width:auto;flex:1 1 auto}.dre-side-subPane{width:auto;flex:1 1 0;border-left:1px solid var(--dsw-alias-border-l2);padding-left:4px}.dre-side-menuHasPane .dre-side-rootPane{width:306px;min-width:306px;max-width:306px;flex:0 0 306px}.dre-side-cell{display:flex;align-items:center;gap:8px;width:100%;height:40px;border:0;border-radius:9px;background:transparent;color:inherit;padding:0 10px;text-align:left;font:inherit;font-size:14px;cursor:pointer}.dre-side-cell:hover,.dre-side-option:hover{background:var(--dsw-alias-interactive-bg-hover)}.dre-side-cellLabel{flex:1;min-width:0}.dre-side-cellValue{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dsw-alias-label-tertiary)}.dre-side-chevron{display:inline-flex;align-items:center;justify-content:center;flex:none;width:16px;height:16px;color:var(--dsw-alias-label-tertiary);font-size:0;line-height:0}.dre-side-chevron::before{box-sizing:border-box;width:7px;height:7px;border-top:1.5px solid currentColor;border-right:1.5px solid currentColor;content:'';transform:rotate(45deg)}.dre-side-chevron[data-direction='down']::before{transform:rotate(135deg)}.dre-side-chevron[data-direction='up']::before{transform:rotate(-45deg)}.dre-side-groupTitle{padding:6px 10px 3px;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}.dre-side-option{display:flex;align-items:center;gap:8px;width:100%;min-height:38px;border:0;border-radius:9px;background:transparent;color:inherit;padding:6px 8px;text-align:left;font:inherit;cursor:pointer}.dre-side-optionCopy{display:flex;flex:1;min-width:0;flex-direction:column}.dre-side-optionName{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;line-height:20px}.dre-side-optionDescription{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}.dre-side-check{width:18px;flex:none;text-align:center}.dre-side-empty{padding:10px;color:var(--dsw-alias-label-tertiary);font-size:13px}
+.dre-side-root{position:relative;min-width:0}.dre-side-trigger{box-sizing:border-box;display:flex;align-items:center;gap:4px;width:164px;min-width:164px;max-width:164px;height:28px;border:0;border-radius:24px;background:transparent;color:var(--dsw-alias-label-secondary);padding:0 4px 0 8px;font:inherit;font-size:13px;font-weight:500;cursor:pointer}.dre-side-trigger:hover{background:var(--dsw-alias-interactive-bg-hover)}.dre-side-trigger:disabled{color:var(--dsw-alias-label-dimmed);cursor:default}.dre-side-model{min-width:0;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dre-side-effort{flex:none;color:var(--dsw-alias-label-caption);white-space:nowrap}.dre-side-menu{position:absolute;right:0;bottom:calc(100% + 8px);z-index:30;display:flex;width:min(360px,calc(100vw - 24px));max-width:calc(100vw - 24px);max-height:min(390px,100vh - 96px);overflow:hidden;border:1px solid var(--dsw-alias-border-inverted);border-radius:12px;background:var(--dsw-specific-menu);box-shadow:var(--dsw-shadow-lv3);color:var(--dsw-alias-label-primary);padding:4px}.dre-side-menuHasPane{width:min(736px,calc(100vw - 24px))}.dre-side-rootPane,.dre-side-subPane{box-sizing:border-box;min-width:0;overflow-y:auto}.dre-side-rootPane{width:auto;flex:1 1 auto}.dre-side-subPane{width:auto;flex:1 1 0;border-left:1px solid var(--dsw-alias-border-l2);padding-left:4px}.dre-side-menuHasPane .dre-side-rootPane{width:306px;min-width:306px;max-width:306px;flex:0 0 306px}.dre-side-cell{display:flex;align-items:center;gap:8px;width:100%;height:40px;border:0;border-radius:9px;background:transparent;color:inherit;padding:0 10px;text-align:left;font:inherit;font-size:14px;cursor:pointer}.dre-side-cell:hover,.dre-side-option:hover{background:var(--dsw-alias-interactive-bg-hover)}.dre-side-cellLabel{flex:1;min-width:0}.dre-side-cellValue{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dsw-alias-label-tertiary)}.dre-side-chevron{display:inline-flex;align-items:cen... (line truncated to 2000 chars)
 /* Keep the two-pane selector stable against host flex/button rules. */
 .dre-side-menu{box-sizing:border-box;flex-wrap:nowrap;align-items:stretch}
 .dre-side-rootPane,.dre-side-subPane{box-sizing:border-box;display:block!important}
@@ -84,7 +205,7 @@ window.__ModuleLoader__.load({
       document.head.append(style)
     }
 
-    const STANDARD_LEVELS = [
+    const STANDARD_LEVELS: ReadonlyArray<readonly [string, string]> = [
       ['off', '关闭'],
       ['minimal', '最低'],
       ['low', '低'],
@@ -94,14 +215,14 @@ window.__ModuleLoader__.load({
       ['max', '最大']
     ]
 
-    function providersFrom(snapshot) {
+    function providersFrom(snapshot: SettingsSnapshot): Record<string, ProviderConfig> {
       const providers = snapshot?.value?.providers
       return providers && typeof providers === 'object' && !Array.isArray(providers)
         ? providers
         : {}
     }
 
-    function modelEntries(providers) {
+    function modelEntries(providers: Record<string, ProviderConfig>): Array<{ providerId: string; provider: ProviderConfig; model: ModelConfig; key: string }> {
       return Object.entries(providers).flatMap(([providerId, provider]) => {
         const models = Array.isArray(provider?.models) ? provider.models : []
         return models
@@ -110,12 +231,12 @@ window.__ModuleLoader__.load({
       })
     }
 
-    function currentEfforts(model) {
+    function currentEfforts(model: ModelConfig | undefined): ReasoningEfforts {
       const value = model?.reasoningEfforts
       return value && typeof value === 'object' && !Array.isArray(value) ? value : {}
     }
 
-    function applyModels(settingsStore, selectedEntries, drafts) {
+    function applyModels(settingsStore: SettingsStore, selectedEntries: Array<{ providerId: string; model: ModelConfig; key: string }>, drafts: Record<string, ReasoningEfforts>): void {
       const snapshot = settingsStore.getSnapshot()
       const providers = providersFrom(snapshot)
       const nextProviders = { ...providers }
@@ -139,13 +260,13 @@ window.__ModuleLoader__.load({
       })
     }
 
-    const EFFORT_LABELS = {
+    const EFFORT_LABELS: Record<string, string> = {
       off: '关闭', minimal: '最低', low: '低', medium: '中',
       high: '高', xhigh: '超高', max: '最大'
     }
 
-    function effortName(effort) {
-      return EFFORT_LABELS[effort?.id] ?? effort?.name ?? effort?.id ?? '默认'
+    function effortName(effort: { id?: string; name?: string } | undefined): string {
+      return (effort?.id ? EFFORT_LABELS[effort.id] : undefined) ?? effort?.name ?? effort?.id ?? '默认'
     }
 
     function hideNativeModelSelector() {
@@ -159,7 +280,7 @@ window.__ModuleLoader__.load({
       return () => observer.disconnect()
     }
 
-    function NativeChevron({ direction = 'down', animated = false, className = '' }) {
+    function NativeChevron({ direction = 'down', animated = false, className = '' }: { direction?: 'down' | 'right' | 'up'; animated?: boolean; className?: string }) {
       return React.createElement('span', {
         className: `dre-nativeChevron${direction === 'right' ? ' dre-nativeChevronRight' : ''}${direction === 'up' ? ' dre-nativeChevronUp' : ''}${animated ? ' dre-nativeChevronAnimated' : ''}${className ? ` ${className}` : ''}`,
         'aria-hidden': true
@@ -173,7 +294,7 @@ window.__ModuleLoader__.load({
       )
     }
 
-    function NativeCheck({ selected }) {
+    function NativeCheck({ selected }: { selected: boolean }) {
       return React.createElement('span', { className: 'dre-side-check', 'aria-hidden': true },
         selected && React.createElement('svg', { width: 16, height: 16, viewBox: '0 0 16 16', fill: 'none' },
           React.createElement('path', {
@@ -184,7 +305,7 @@ window.__ModuleLoader__.load({
       )
     }
 
-    function SideModelSelect({ available, directory, load, select, locked }) {
+    function SideModelSelect({ available, directory, load, select, locked }: SideModelSelectProps) {
       const state = React.useSyncExternalStore(
         (listener) => directory.subscribe(listener),
         () => directory.getSnapshot(),
@@ -195,7 +316,7 @@ window.__ModuleLoader__.load({
       const [paneSide, setPaneSide] = React.useState('right')
       const [paneVertical, setPaneVertical] = React.useState('down')
       const [paneMaxHeight, setPaneMaxHeight] = React.useState(null)
-      const rootRef = React.useRef(null)
+      const rootRef = React.useRef<Element | null>(null)
 
       React.useEffect(() => {
         if (available) load()
@@ -254,11 +375,11 @@ window.__ModuleLoader__.load({
       }, [open, pane])
 
       if (!available) return null
-      const current = state.current
-      const group = state.groups.find((entry) => entry.id === current?.provider)
+      const current = state.current ?? { provider: '', model: '' }
+      const group = state.groups.find((entry) => entry.id === current.provider)
       const model = group?.models.find((entry) => entry.id === current?.model)
-      const reasoning = model?.reasoning
-      const reasoningAvailable = Array.isArray(reasoning?.efforts) && reasoning.efforts.length > 0
+      const reasoning = model?.reasoning ?? { efforts: [] }
+      const reasoningAvailable = reasoning.efforts.length > 0
       const effort = current?.reasoningEffort ?? reasoning?.defaultEffort
       const modelLabel = model?.name ?? current?.model ?? '选择模型'
       const showProviderHeaders = state.groups.length > 1
@@ -352,7 +473,7 @@ window.__ModuleLoader__.load({
       )
     }
 
-    function ReasoningSettingsCard({ settingsStore }) {
+    function ReasoningSettingsCard({ settingsStore }: ReasoningSettingsCardProps) {
       const snapshot = React.useSyncExternalStore(
         (listener) => settingsStore.subscribe(listener),
         () => settingsStore.getSnapshot(),

@@ -86,12 +86,13 @@ dsh web --patch C:/path/to/dsh-reasoning/cordis.patch.yml
 
 ## 开发
 
-Host 入口和浏览器端 Client 分别位于 `src/index.js` 与 `src/client.js`。当前包没有
-构建或测试脚本，可以使用 Node 语法检查：
+Host 入口和浏览器端 Client 分别位于 TypeScript 文件 `src/index.ts` 与 `src/client.ts`。
+项目使用 TypeScript 编译到运行时所需的 `dist/` 文件：
 
 ```bash
-node --check src/index.js
-node --check src/client.js
+npm install
+npm run typecheck
+npm run build
 ```
 
 Client 依赖 `package.json` 中声明的 DSH Web runtime 和 peer packages。进行本地测试时，
