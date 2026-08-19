@@ -2,7 +2,7 @@
 
 [![DSH Plugin](https://img.shields.io/badge/DeepSeek%20Harness-plugin-4f7cff)](https://github.com/topics/dsh-plugin)
 [![GitHub repository](https://img.shields.io/badge/source-GitHub-181717?logo=github)](https://github.com/LanQin996/dsh-reasoning)
-[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
+[![License: LGPL-3.0-only](https://img.shields.io/badge/license-LGPL--3.0--only-blue.svg)](LICENSE)
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
@@ -136,5 +136,5 @@ DSH settings store.
 
 Copyright (C) 2026 LanQin.
 
-This project is licensed under the [GNU General Public License v3.0](LICENSE)
-(`GPL-3.0-only`).
+This project is licensed under the [GNU Lesser General Public License v3.0](LICENSE)
+(`LGPL-3.0-only`).

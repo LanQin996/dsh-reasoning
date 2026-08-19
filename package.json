@@ -1,8 +1,8 @@
 {
   "name": "dsh-plugin-reasoning-effort",
-  "version": "0.1.5",
+  "version": "0.1.9",
   "description": "Configure model input capabilities and reasoning efforts for DeepSeek Harness",
-  "license": "GPL-3.0-only",
+  "license": "LGPL-3.0-only",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LanQin996/dsh-reasoning.git"
@@ -35,7 +35,8 @@
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "typecheck": "tsc --project tsconfig.json --noEmit",
-    "prepack": "npm run typecheck && npm run build"
+    "verify:client": "node scripts/verify-client.cjs",
+    "prepack": "npm run typecheck && npm run build && npm run verify:client"
   },
   "devDependencies": {
     "typescript": "^5.6.3"

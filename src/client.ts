@@ -146,9 +146,36 @@ interface ReactRuntime {
 .dre-batch{margin-top:12px;padding-top:12px;border-top:1px solid var(--dsw-alias-border-l2)}.dre-batchTitle{margin-bottom:7px;font-size:13px;font-weight:600;line-height:20px}.dre-levels{display:flex;flex-wrap:wrap;gap:6px 12px}.dre-level{display:inline-flex;align-items:center;gap:5px;color:var(--dsw-alias-label-primary);font-size:12px;line-height:20px;cursor:pointer}.dre-level input{accent-color:var(--dsw-alias-brand-primary);margin:0}
 .dre-custom{box-sizing:border-box;width:100%;height:30px;margin-top:8px;border:1px solid var(--dsw-alias-border-l2);border-radius:6px;background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);padding:0 8px;font:inherit;font-size:12px;outline:0}.dre-custom:focus{border-color:var(--dsw-alias-brand-primary)}
 .dre-apply{margin-top:10px;width:100%;color:var(--dsw-alias-label-primary)}
+.dre-applyStatus{min-height:18px;margin-top:6px;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px;text-align:center}.dre-applyStatusSuccess{color:var(--dsw-alias-state-success-primary,#238636)}.dre-applyStatusError{color:var(--dsw-alias-state-error-primary)}
 .dre-empty,.dre-error{padding:12px 0;color:var(--dsw-alias-label-secondary);font-size:12px;line-height:18px}.dre-error{color:var(--dsw-alias-state-error-primary)}
 .dre-native-model-hidden{display:none!important}
-.dre-side-root{position:relative;min-width:0}.dre-side-trigger{box-sizing:border-box;display:flex;align-items:center;gap:4px;width:164px;min-width:164px;max-width:164px;height:28px;border:0;border-radius:24px;background:transparent;color:var(--dsw-alias-label-secondary);padding:0 4px 0 8px;font:inherit;font-size:13px;font-weight:500;cursor:pointer}.dre-side-trigger:hover{background:var(--dsw-alias-interactive-bg-hover)}.dre-side-trigger:disabled{color:var(--dsw-alias-label-dimmed);cursor:default}.dre-side-model{min-width:0;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dre-side-effort{flex:none;color:var(--dsw-alias-label-caption);white-space:nowrap}.dre-side-menu{position:absolute;right:0;bottom:calc(100% + 8px);z-index:30;display:flex;width:min(360px,calc(100vw - 24px));max-width:calc(100vw - 24px);max-height:min(390px,100vh - 96px);overflow:hidden;border:1px solid var(--dsw-alias-border-inverted);border-radius:12px;background:var(--dsw-specific-menu);box-shadow:var(--dsw-shadow-lv3);color:var(--dsw-alias-label-primary);padding:4px}.dre-side-menuHasPane{width:min(736px,calc(100vw - 24px))}.dre-side-rootPane,.dre-side-subPane{box-sizing:border-box;min-width:0;overflow-y:auto}.dre-side-rootPane{width:auto;flex:1 1 auto}.dre-side-subPane{width:auto;flex:1 1 0;border-left:1px solid var(--dsw-alias-border-l2);padding-left:4px}.dre-side-menuHasPane .dre-side-rootPane{width:306px;min-width:306px;max-width:306px;flex:0 0 306px}.dre-side-cell{display:flex;align-items:center;gap:8px;width:100%;height:40px;border:0;border-radius:9px;background:transparent;color:inherit;padding:0 10px;text-align:left;font:inherit;font-size:14px;cursor:pointer}.dre-side-cell:hover,.dre-side-option:hover{background:var(--dsw-alias-interactive-bg-hover)}.dre-side-cellLabel{flex:1;min-width:0}.dre-side-cellValue{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dsw-alias-label-tertiary)}.dre-side-chevron{display:inline-flex;align-items:cen... (line truncated to 2000 chars)
+.dre-side-root{position:relative;min-width:0}
+.dre-side-trigger{box-sizing:border-box;display:flex;align-items:center;gap:4px;width:164px;min-width:164px;max-width:164px;height:28px;border:0;border-radius:24px;background:transparent;color:var(--dsw-alias-label-secondary);padding:0 4px 0 8px;font:inherit;font-size:13px;font-weight:500;cursor:pointer}
+.dre-side-trigger:hover{background:var(--dsw-alias-interactive-bg-hover)}
+.dre-side-trigger:disabled{color:var(--dsw-alias-label-dimmed);cursor:default}
+.dre-side-model{min-width:0;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dre-side-effort{flex:none;color:var(--dsw-alias-label-caption);white-space:nowrap}
+.dre-side-menu{position:absolute;right:0;bottom:calc(100% + 8px);z-index:30;display:flex;width:min(360px,calc(100vw - 24px));max-width:calc(100vw - 24px);max-height:min(390px,100vh - 96px);overflow:hidden;border:1px solid var(--dsw-alias-border-inverted);border-radius:12px;background:var(--dsw-specific-menu);box-shadow:var(--dsw-shadow-lv3);color:var(--dsw-alias-label-primary);padding:4px}
+.dre-side-menuHasPane{width:min(736px,calc(100vw - 24px))}
+.dre-side-rootPane,.dre-side-subPane{box-sizing:border-box;min-width:0;overflow-y:auto}
+.dre-side-rootPane{width:auto;flex:1 1 auto}
+.dre-side-subPane{width:auto;flex:1 1 0;border-left:1px solid var(--dsw-alias-border-l2);padding-left:4px}
+.dre-side-menuHasPane .dre-side-rootPane{width:306px;min-width:306px;max-width:306px;flex:0 0 306px}
+.dre-side-cell{display:flex;align-items:center;gap:8px;width:100%;height:40px;border:0;border-radius:9px;background:transparent;color:inherit;padding:0 10px;text-align:left;font:inherit;font-size:14px;cursor:pointer}
+.dre-side-cell:hover,.dre-side-option:hover{background:var(--dsw-alias-interactive-bg-hover)}
+.dre-side-cellLabel{flex:1;min-width:0}
+.dre-side-cellValue{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dsw-alias-label-tertiary)}
+.dre-side-chevron{display:inline-flex;align-items:center;justify-content:center;flex:none;width:16px;height:16px;color:var(--dsw-alias-label-tertiary);font-size:0;line-height:0}
+.dre-side-chevron::before{box-sizing:border-box;width:7px;height:7px;border-top:1.5px solid currentColor;border-right:1.5px solid currentColor;content:'';transform:rotate(45deg)}
+.dre-side-chevron[data-direction='down']::before{transform:rotate(135deg)}
+.dre-side-chevron[data-direction='up']::before{transform:rotate(-45deg)}
+.dre-side-groupTitle{padding:6px 10px 3px;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}
+.dre-side-option{display:flex;align-items:center;gap:8px;width:100%;min-height:38px;border:0;border-radius:9px;background:transparent;color:inherit;padding:6px 8px;text-align:left;font:inherit;cursor:pointer}
+.dre-side-optionCopy{display:flex;flex:1;min-width:0;flex-direction:column}
+.dre-side-optionName{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;line-height:20px}
+.dre-side-optionDescription{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}
+.dre-side-check{width:18px;flex:none;text-align:center}
+.dre-side-empty{padding:10px;color:var(--dsw-alias-label-tertiary);font-size:13px}
 /* Keep the two-pane selector stable against host flex/button rules. */
 .dre-side-menu{box-sizing:border-box;flex-wrap:nowrap;align-items:stretch}
 .dre-side-rootPane,.dre-side-subPane{box-sizing:border-box;display:block!important}
@@ -250,7 +277,7 @@ interface ReactRuntime {
       return currentInput(model) ?? ['text']
     }
 
-    function applyModels(settingsStore: SettingsStore, selectedEntries: Array<{ providerId: string; model: ModelConfig; key: string }>, drafts: Record<string, ReasoningEfforts>, inputDrafts: Record<string, InputModality[]>): void {
+    function applyModels(settingsStore: SettingsStore, selectedEntries: Array<{ providerId: string; model: ModelConfig; key: string }>, drafts: Record<string, ReasoningEfforts>, inputDrafts: Record<string, InputModality[]>): Promise<void> {
       const snapshot = settingsStore.getSnapshot()
       const providers = providersFrom(snapshot)
       const nextProviders = { ...providers }
@@ -278,9 +305,7 @@ interface ReactRuntime {
           })
         }
       }
-      Promise.resolve(settingsStore.set('providers', nextProviders)).catch((error) => {
-        console.error('[dsh-plugin-reasoning-effort] failed to save settings', error)
-      })
+      return Promise.resolve(settingsStore.set('providers', nextProviders)).then(() => undefined)
     }
 
     const EFFORT_LABELS: Record<string, string> = {
@@ -507,6 +532,8 @@ interface ReactRuntime {
       const [drafts, setDrafts] = React.useState({})
       const [inputDrafts, setInputDrafts] = React.useState({})
       const [customDraft, setCustomDraft] = React.useState('')
+      const [applyState, setApplyState] = React.useState('idle')
+      const [appliedCount, setAppliedCount] = React.useState(0)
       const providers = providersFrom(snapshot)
       const entries = modelEntries(providers)
       const writable = snapshot.status === 'ready' && snapshot.writable !== false
@@ -516,7 +543,11 @@ interface ReactRuntime {
       }, [settingsStore])
 
       const selectedEntries = entries.filter((entry) => selectedKeys.includes(entry.key))
+      const resetApplyState = () => {
+        if (applyState !== 'saving') setApplyState('idle')
+      }
       const selectModel = (key) => {
+        resetApplyState()
         setCustomDraft('')
         setSelectedKeys((current) => current.includes(key)
           ? current.filter((value) => value !== key)
@@ -532,6 +563,7 @@ interface ReactRuntime {
 
       const toggleInput = (modality: InputModality) => {
         if (!writable || selectedEntries.length === 0) return
+        resetApplyState()
         const enabled = allHaveInput(modality)
         setInputDrafts((current) => {
           const next = { ...current }
@@ -548,6 +580,7 @@ interface ReactRuntime {
 
       const toggleLevel = (level) => {
         if (!writable || selectedEntries.length === 0) return
+        resetApplyState()
         const enabled = allHave(level)
         setDrafts((current) => {
           const next = { ...current }
@@ -573,6 +606,7 @@ interface ReactRuntime {
 
       const saveCustom = (value) => {
         if (!writable || selectedEntries.length === 0) return
+        resetApplyState()
         setDrafts((current) => {
           const next = { ...current }
           for (const entry of selectedEntries) {
@@ -593,11 +627,37 @@ interface ReactRuntime {
         setCustomDraft(value)
       }
 
-      const selectAll = () => setSelectedKeys(entries.map((entry) => entry.key))
+      const selectAll = () => {
+        resetApplyState()
+        setSelectedKeys(entries.map((entry) => entry.key))
+      }
       const clearSelection = () => {
+        resetApplyState()
         setSelectedKeys([])
         setCustomDraft('')
       }
+
+      const applySelectedModels = async () => {
+        if (!writable || selectedEntries.length === 0 || applyState === 'saving') return
+        const count = selectedEntries.length
+        setApplyState('saving')
+        try {
+          await applyModels(settingsStore, selectedEntries, drafts, inputDrafts)
+          setAppliedCount(count)
+          setApplyState('success')
+        } catch (error) {
+          console.error('[dsh-plugin-reasoning-effort] failed to save settings', error)
+          setApplyState('error')
+        }
+      }
+
+      const applyStatus = applyState === 'saving'
+        ? '正在保存模型设置...'
+        : applyState === 'success'
+          ? `已应用到 ${appliedCount} 个模型`
+          : applyState === 'error'
+            ? '应用失败，请重试'
+            : ''
 
       const modelList = entries.map(({ providerId, provider, model, key }) => {
         const selected = selectedKeys.includes(key)
@@ -606,7 +666,7 @@ interface ReactRuntime {
           React.createElement('div', { className: 'dre-model' },
             React.createElement('label', null,
               React.createElement('input', {
-                type: 'checkbox', checked: selected, disabled: !writable,
+                type: 'checkbox', checked: selected, disabled: !writable || applyState === 'saving',
                 onChange: () => selectModel(key)
               }),
               React.createElement('span', { className: 'dre-modelName' }, model.name || model.id)
@@ -633,8 +693,8 @@ interface ReactRuntime {
           entries.length > 0 && React.createElement(React.Fragment, null,
             React.createElement('div', { className: 'dre-selectionBar' },
               React.createElement('span', { className: 'dre-selectionCount' }, `已选择 ${selectedEntries.length} 个模型`),
-              React.createElement('button', { type: 'button', className: 'dre-smallButton', disabled: !writable, onClick: selectAll }, '全选'),
-              React.createElement('button', { type: 'button', className: 'dre-smallButton', disabled: !writable || selectedEntries.length === 0, onClick: clearSelection }, '清除')
+              React.createElement('button', { type: 'button', className: 'dre-smallButton', disabled: !writable || applyState === 'saving', onClick: selectAll }, '全选'),
+              React.createElement('button', { type: 'button', className: 'dre-smallButton', disabled: !writable || selectedEntries.length === 0 || applyState === 'saving', onClick: clearSelection }, '清除')
             ),
             React.createElement('div', { className: 'dre-modelList' }, modelList),
             React.createElement('div', { className: 'dre-capability' },
@@ -643,7 +703,7 @@ interface ReactRuntime {
                 ([['text', '文本'], ['image', '图片']] as const).map(([id, label]) =>
                   React.createElement('label', { className: 'dre-capabilityOption', key: id },
                     React.createElement('input', {
-                      type: 'checkbox', checked: allHaveInput(id), disabled: !writable || selectedEntries.length === 0,
+                      type: 'checkbox', checked: allHaveInput(id), disabled: !writable || selectedEntries.length === 0 || applyState === 'saving',
                       onChange: () => toggleInput(id)
                     }), label
                   )
@@ -656,20 +716,24 @@ interface ReactRuntime {
               React.createElement('div', { className: 'dre-levels' }, STANDARD_LEVELS.map(([id, label]) =>
                 React.createElement('label', { className: 'dre-level', key: id },
                   React.createElement('input', {
-                    type: 'checkbox', checked: allHave(id), disabled: !writable || selectedEntries.length === 0,
+                    type: 'checkbox', checked: allHave(id), disabled: !writable || selectedEntries.length === 0 || applyState === 'saving',
                     onChange: () => toggleLevel(id)
                   }), label
                 )
               )),
               React.createElement('input', {
-                className: 'dre-custom', type: 'text', disabled: !writable || selectedEntries.length === 0,
+                className: 'dre-custom', type: 'text', disabled: !writable || selectedEntries.length === 0 || applyState === 'saving',
                 placeholder: '自定义等级：id 或 id=wireValue', value: customValue(),
-                onChange: (event) => setCustomDraft(event.target.value), onBlur: (event) => saveCustom(event.target.value)
+                onChange: (event) => { resetApplyState(); setCustomDraft(event.target.value) }, onBlur: (event) => saveCustom(event.target.value)
               }),
               React.createElement('button', {
-                type: 'button', className: 'dre-apply', disabled: !writable || selectedEntries.length === 0,
-                onClick: () => applyModels(settingsStore, selectedEntries, drafts, inputDrafts)
-              }, '应用到选中模型')
+                type: 'button', className: 'dre-apply', disabled: !writable || selectedEntries.length === 0 || applyState === 'saving',
+                onClick: applySelectedModels
+              }, applyState === 'saving' ? '正在应用...' : applyState === 'success' ? '已应用' : '应用到选中模型'),
+              React.createElement('div', {
+                className: `dre-applyStatus${applyState === 'success' ? ' dre-applyStatusSuccess' : ''}${applyState === 'error' ? ' dre-applyStatusError' : ''}`,
+                role: 'status', 'aria-live': 'polite'
+              }, applyStatus)
             )
           )
         )
